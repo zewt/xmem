@@ -112,8 +112,11 @@ public:
     }
 
     void reset(std::nullptr_t = nullptr) noexcept {
-        if (m.cb) m.cb->dec_strong_ref(this);
+        // We may be deallocated by calling dec_strong_ref, so make a local
+        // copy of m first.
+        auto m_copy = m;
         m.reset();
+        if (m_copy.cb) m_copy.cb->dec_strong_ref(this);
     }
 
     template <typename U>
