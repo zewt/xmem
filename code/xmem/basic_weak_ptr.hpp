@@ -182,5 +182,31 @@ template <typename CBF, typename T1, typename T2>
     return s1.owner() == s2.owner();
 }
 
+struct basic_weak_owner_less {
+    template <typename CBF1, typename T1, typename CBF2, typename T2>
+    bool operator()(const basic_weak_ptr<CBF1, T1>& a,
+                    const basic_weak_ptr<CBF2, T2>& b) const noexcept {
+        return a.owner_before(b);
+    }
 
+    template <typename CBF1, typename T1, typename CBF2, typename T2>
+    bool operator()(const basic_weak_ptr<CBF1, T1>& a,
+                    const basic_shared_ptr<CBF2, T2>& b) const noexcept {
+        return a.owner_before(b);
+    }
+
+    template <typename CBF1, typename T1, typename CBF2, typename T2>
+    bool operator()(const basic_shared_ptr<CBF1, T1>& a,
+                    const basic_weak_ptr<CBF2, T2>& b) const noexcept {
+        return a.owner_before(b);
+    }
+};
 } // namespace xmem
+
+namespace std {
+    template <typename CBF, typename T>
+    struct owner_less<xmem::basic_weak_ptr<CBF, T>> : xmem::basic_weak_owner_less {};
+
+    template <typename CBF, typename T>
+    struct owner_less<xmem::basic_shared_ptr<CBF, T>> : xmem::basic_weak_owner_less {};
+}
