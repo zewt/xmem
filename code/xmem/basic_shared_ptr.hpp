@@ -24,6 +24,16 @@ public:
     basic_shared_ptr() noexcept : m(nullptr) {}
     basic_shared_ptr(std::nullptr_t) noexcept : basic_shared_ptr() {};
 
+    template <typename U,
+        typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
+    basic_shared_ptr(const basic_weak_ptr<CBF, U>& w) {
+        if(w.use_count() == 0) {
+            throw std::bad_weak_ptr();
+        }
+    
+        init_from_copy(cb_ptr_pair_type(w.m.cb, static_cast<element_type*>(w.m.ptr)));
+    }
+    
     basic_shared_ptr(const basic_shared_ptr& r) noexcept {
         init_from_copy(r.m);
     }
