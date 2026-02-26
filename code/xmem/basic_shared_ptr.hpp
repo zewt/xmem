@@ -44,7 +44,8 @@ public:
         return *this;
     }
 
-    template <typename U>
+    template <typename U,
+        typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
     basic_shared_ptr(const basic_shared_ptr<CBF, U>& r) noexcept {
         init_from_copy(r.m);
     }
