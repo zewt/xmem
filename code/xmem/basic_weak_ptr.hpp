@@ -9,6 +9,8 @@ namespace xmem {
 template <typename CBF, typename T>
 class basic_weak_ptr {
 public:
+    friend class basic_shared_ptr<CBF, T>;
+
     using element_type = std::remove_extent_t<T>;
     using control_block_type = typename CBF::cb_type;
     using cb_ptr_pair_type = cb_ptr_pair<control_block_type, element_type>;

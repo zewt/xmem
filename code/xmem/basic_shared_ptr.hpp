@@ -164,9 +164,15 @@ public:
 
     [[nodiscard]] const void* owner() const noexcept { return m.cb; }
     [[nodiscard]] const control_block_type* t_owner() const noexcept { return m.cb; }
+    [[nodiscard]] control_block_type* t_owner() noexcept { return m.cb; }
 
     template <typename UCBF, typename U>
     [[nodiscard]] bool owner_before(const basic_shared_ptr<UCBF, U>& r) const noexcept {
+        return m.cb < r.m.cb;
+    }
+
+    template <typename UCBF, typename U>
+    [[nodiscard]] bool owner_before(const basic_weak_ptr<UCBF, U>& r) const noexcept {
         return m.cb < r.m.cb;
     }
 
@@ -225,6 +231,27 @@ template <typename CBF, typename U, typename T>
 [[nodiscard]] basic_shared_ptr<CBF, T> make_aliased(const basic_shared_ptr<CBF, U>& owner, T* ptr) {
     if (owner.use_count() == 0) return {};
     return basic_shared_ptr<CBF, T>(owner, ptr);
+}
+
+template <typename CBF, typename T>
+[[nodiscard]] bool operator==(const xmem::basic_shared_ptr<CBF, T>& p, std::nullptr_t) noexcept {
+    return p.get() == nullptr;
+}
+
+template <typename CBF, typename T>
+[[nodiscard]] bool operator==(std::nullptr_t, const xmem::basic_shared_ptr<CBF, T>& p) noexcept {
+    return p.get() == nullptr;
+}
+
+template <typename CBF, typename T>
+[[nodiscard]] bool operator!=(const xmem::basic_shared_ptr<CBF, T>& p, std::nullptr_t) noexcept {
+    return p.get() != nullptr;
+}
+
+template <typename CBF, typename T>
+[[nodiscard]] bool operator!=(std::nullptr_t,
+                              const xmem::basic_shared_ptr<CBF, T>& p) noexcept {
+    return p.get() != nullptr;
 }
 
 // casts
